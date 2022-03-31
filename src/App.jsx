@@ -94,6 +94,18 @@ class App extends Component {
     
     const imageLoaderRequest = new XMLHttpRequest();
 
+    // Load the previously saved game state from the 
+    // network and load if found.
+    const savedState = dome.load(
+      '0x1ABC7154748D1CE5144478CDEB574AE244B939B5', // account/bucket/game/id
+      '0xE3EF1C5F7501AA64E037D13F87CB806EE975231E', // user id
+    );
+    if (savedState) {
+      this.setState({
+        ...savedState,
+      })
+    }
+
 imageLoaderRequest.addEventListener("load", e => {
     console.log(`${e.type}`);
     console.log(e);
@@ -229,6 +241,28 @@ imageLoaderRequest.send();
           }, 1200)
         }
       })
+  }
+
+  handleSave = () => {
+    // Save the current game state to the network.
+    // We leave out loading some fields.
+    const { 
+      loading, 
+      showDownMessages, 
+      playActionMessages, 
+      playerAnimationSwitchboard, 
+      ...saveState
+    } = state;
+    try {
+      dome.save(
+        '0x1ABC7154748D1CE5144478CDEB574AE244B939B5', // account/bucket/game/id
+        '0xE3EF1C5F7501AA64E037D13F87CB806EE975231E', // user id
+        saveState, // game state
+      );
+    } catch (err) {
+      // TODO: handle error and display.
+      // Note: maybe fallback to local save, depends.
+    }
   }
 
   renderBoard = () => {

@@ -416,6 +416,37 @@ imageLoaderRequest.send();
       </div>
     )
   }
+
+  async renderLobby() {
+    // Load the list of players from the game lobby.
+    // This list of players and their state should be shown in the UI.
+    const players = dome.lobby(
+      '0x1ABC7154748D1CE5144478CDEB574AE244B939B5', // account/bucket/game/id
+      '0xE3EF1C5F7501AA64E037D13F87CB806EE975231E', // user id
+    );
+
+    // Note: Some sections are skipped and not implemented graphically so this 
+    //       is more of a proof-of-concept.
+    
+    // Signal that the player is ready to start the game and wait
+    // for the remaining players to start.  The promise will resolve when 
+    // all players are ready.  If there is a timeout or other error then handle
+    // it and reload the lobby.
+    try {
+      await dome.ready(
+        '0x1ABC7154748D1CE5144478CDEB574AE244B939B5', // account/bucket/game/id
+        '0xE3EF1C5F7501AA64E037D13F87CB806EE975231E', // user id
+      );
+    } catch (err) {
+      // TODO: handle and display the error.
+      this.renderLobby();
+      return;
+    }
+
+    // Now render the game and load the state from the network.
+    this.renderGame();
+  }
+
   render() {
     return (
       <div className="App">
@@ -423,7 +454,7 @@ imageLoaderRequest.send();
           { 
             (this.state.loading) ? <Spinner/> : 
             (this.state.winnerFound) ? <WinScreen /> : 
-            this.renderGame()
+            this.renderLobby()
           }
         </div>
       </div>

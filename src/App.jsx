@@ -193,11 +193,16 @@ imageLoaderRequest.send();
     const newState = handleBet(cloneDeep(appState), parseInt(bet, 10), parseInt(min, 10), parseInt(max, 10));
       
     // Save the state update for the game to the network.
-    dome.update(
-      '0x1ABC7154748D1CE5144478CDEB574AE244B939B5', // account/bucket/game/id
-      '0xE3EF1C5F7501AA64E037D13F87CB806EE975231E', // user id
-      newState,
-    );
+    try {
+      dome.update(
+        '0x1ABC7154748D1CE5144478CDEB574AE244B939B5', // account/bucket/game/id
+        '0xE3EF1C5F7501AA64E037D13F87CB806EE975231E', // user id
+        newState,
+      );
+    } catch (err) {
+      // TODO: handle error and display or use some retry strategy.
+      // Note: maybe the retry strategy goes in the SDK.
+    }
     
       this.setState(newState, () => {
         if((this.state.players[this.state.activePlayerIndex].robot) && (this.state.phase !== 'showdown')) {
